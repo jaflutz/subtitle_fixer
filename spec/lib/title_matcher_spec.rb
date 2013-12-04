@@ -1,7 +1,25 @@
 require 'spec_helper'
+require 'title_matcher'
 
 describe "TitleMatcher" do
-  it "matches similar titles from mkv and srt"
+  let (:upper_title) { "Person.of.Interest.S03E10.720p.HDTV.X264-DIMENSION" }
+  let (:down_title) { "Person.of.Interest.s03e10.720p.HDTV.X264-DIMENSION" }
+  let (:different_title_same_episode) { "PersonofInterest.S03E10.720p.HDTV.X264-DIMENSION" }
+  let (:same_title_different_episode) { "Person.of.Interest.S03E11.720p.HDTV.X264-DIMENSION" }
+  let (:same_title_different_season) { "Person.of.Interest.S04E10.720p.HDTV.X264-DIMENSION" }
 
-  it "doesn't match titles from different episodes"
+  it "matches similar titles from mkv and srt" do
+    expect(TitleMatcher.match?(upper_title, different_title_same_episode)).to be_true
+    expect(TitleMatcher.match?(different_title_same_episode, down_title)).to be_true
+    expect(TitleMatcher.match?(upper_title, down_title)).to be_true
+    expect(TitleMatcher.match?(down_title, down_title)).to be_true
+  end
+
+
+  it "doesn't match titles from different episodes" do
+    expect(TitleMatcher.match?(upper_title, same_title_different_episode)).to be_false
+    expect(TitleMatcher.match?(down_title, same_title_different_episode)).to be_false
+    expect(TitleMatcher.match?(down_title, same_title_different_season)).to be_false
+    expect(TitleMatcher.match?(same_title_different_episode, same_title_different_season)).to be_false        
+  end
 end
